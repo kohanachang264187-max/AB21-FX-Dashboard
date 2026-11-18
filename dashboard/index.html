@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FX Research Desk | H1 Research Dashboard</title>
+<meta name="theme-color" content="#0b1220"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="AB21 FX"><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" href="./icon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#0b1220;color:#eef4ff}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1100px;margin:auto;padding:18px}h1{font-size:21px}h2{font-size:17px}.muted{color:#a5b6cf}.warning{color:#ffd18a}.ok{color:#6be3bb}.panel{background:#15243a;border:1px solid #30445e;border-radius:12px;padding:16px;margin:14px 0}button,select,input{background:#263c57;color:white;border:1px solid #4b6584;border-radius:8px;padding:10px;font-size:15px}button{cursor:pointer}button:disabled{opacity:.5}.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.stat{background:#20334e;border-radius:9px;padding:12px}.stat strong{display:block;font-size:22px;margin-top:7px}table{border-collapse:collapse;width:100%}th,td{text-align:left;padding:10px 7px;border-bottom:1px solid #31465f;font-size:13px}th{color:#a5b6cf}.scroll{overflow-x:auto}svg{width:100%;height:auto;display:block}.tag{display:inline-block;border:1px solid #d2a34e;color:#ffd18a;border-radius:6px;padding:5px 8px;font-size:12px}a{color:#8bc5ff}.alert-row{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #31465f}.alert-row small{display:block;color:#a5b6cf}.alert-near{color:#ffd18a}.alert-touch{color:#6be3bb}#alerts{max-height:400px;overflow:auto}@media(max-width:600px){.wrap{padding:10px}.stats{grid-template-columns:1fr 1fr}.panel{padding:12px}}
+
+/* AB21 Research Desk v2: decision-first, responsive, research-only */
+:root{--bg:#090f1b;--surface:#121f31;--border:#2b4058;--text:#eff5ff;--accent:#67d7c2}body{background:radial-gradient(ellipse at 80% -10%,#183958 0%,#090f1b 55%);color:var(--text)}.wrap{max-width:1450px;padding:22px 24px}header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}header h1{letter-spacing:.09em;font-weight:800}.panel{background:linear-gradient(145deg,#16263b,#101d2e);border-color:var(--border);box-shadow:0 12px 35px #0002}.stat{background:#172c43;border:1px solid #314960}.stat strong{font-variant-numeric:tabular-nums}.desk-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:16px 0 20px}.desk-hero h2{font-size:27px;margin:0}.desk-hero p{margin:6px 0;color:#a9bad1}.desk-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(300px,1fr);gap:14px}.desk-grid>.panel{margin:0}.desk-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.desk-metric{border:1px solid #314960;background:#172c43;border-radius:12px;padding:15px}.desk-metric b{display:block;font-size:26px;margin-top:8px}.desk-metric small{color:#a9bad1}.desk-tabs{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}.desk-tabs button{border-radius:30px;padding:8px 14px}.desk-tabs button[aria-pressed=true]{background:#286f78;border-color:#64d6c6}.desk-subtle{color:#a9bad1;font-size:12px}.desk-empty{padding:22px;text-align:center;color:#a9bad1}.desk-list{max-height:370px;overflow:auto}.desk-item{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2b4058;padding:10px 2px;gap:10px}.desk-item button{padding:5px 9px}.desk-pill{border-radius:999px;padding:4px 8px;font-size:11px;background:#233f53;color:#d3e9f7}.desk-pill.touch{background:#16483f;color:#87efd0}.desk-pill.near{background:#4b3b23;color:#ffdb95}.desk-health{font-size:13px;line-height:1.8}.desk-health strong{color:#ffd18a}tr[data-desk-pair]{cursor:pointer}tr[data-desk-pair]:hover{background:#24435a}#chart{background:#101e30;border-radius:10px}button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #7cf1d9;outline-offset:2px}@media(max-width:900px){.desk-grid{grid-template-columns:1fr}.desk-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.wrap{padding:12px}.desk-hero h2{font-size:22px}.desk-metric b{font-size:22px}.desk-metric{padding:11px}.panel{padding:12px}th,td{white-space:nowrap}}
+</style></head><body><main class="wrap">
+<header><h1>◈ FX RESEARCH DESK</h1><span class="tag">PROVISIONAL · 研究専用</span></header>
+<p class="muted">21通貨ペアの確定H1を表示。価格データはブラウザ内で処理し、外部送信しません。実売買・売買シグナルには使用しないでください。</p>
+<section class="desk-hero"><div><h2>MARKET OVERVIEW <span class="ok">/ 21 PAIRS</span></h2><p>水平線・確定足・ファンダメンタルズを一元監視</p></div><span class="tag">RESEARCH ONLY · NO LIVE ORDERS</span></section>
+<section class="desk-metrics" aria-label="研究サマリー"><div class="desk-metric"><small>読み込み済み</small><b id="deskLoaded">0 / 21</b></div><div class="desk-metric"><small>水平線イベント</small><b id="deskEvents">—</b></div><div class="desk-metric"><small>接触イベント</small><b id="deskTouches">—</b></div><div class="desk-metric"><small>最新H1（UTC）</small><b id="deskLatest" style="font-size:15px">—</b></div></section>
+<div class="desk-tabs" role="group" aria-label="通貨グループ"><button type="button" data-desk-filter="ALL" aria-pressed="true">全21ペア</button><button type="button" data-desk-filter="JPY" aria-pressed="false">クロス円</button><button type="button" data-desk-filter="USD" aria-pressed="false">USD関連</button><button type="button" data-desk-filter="OTHER" aria-pressed="false">その他</button></div>
+<div class="desk-grid"><section class="panel"><h2>優先監視リスト <span class="desk-subtle">接触を最優先・次に距離順</span></h2><div id="deskPriority" class="desk-list"><p class="desk-empty">CSVを読み込むと監視対象を表示します</p></div></section><section class="panel"><h2>データ健全性</h2><div id="deskHealth" class="desk-health">データ未読込。<strong>NOT TRADEABLE</strong></div><p class="desk-subtle">研究データの品質認証ではありません。価格・鮮度・Bid/Askの追加監査が必要です。</p></section></div>
+<section class="panel"><h2>データ連携</h2><div class="controls"><button id="load">同一サーバーの研究用CSVを読み込む</button><label>またはCSVを選択 <input id="files" type="file" accept=".csv" multiple></label></div><p class="muted">自動読み込みは、リポジトリの research_data/fx_sessions/H1/ が同じWebサーバーから配信される場合のみ利用できます。GitHubの非公開リポジトリにブラウザから直接アクセスするためのトークン入力は設けていません。</p><p id="status" role="status" class="warning">自動読込を準備中。デモ数値は表示しません。</p></section>
+<section class="stats"><div class="stat"><span class="muted">読み込みペア</span><strong id="count">0 / 21</strong></div><div class="stat"><span class="muted">最新確定足（UTC）</span><strong id="latest" style="font-size:15px">—</strong></div><div class="stat"><span class="muted">研究データ状態</span><strong style="font-size:15px" class="warning">NOT TRADEABLE</strong></div></section>
+<section class="panel"><h2>通貨ペア別H1価格</h2><div class="scroll"><table><thead><tr><th>ペア</th><th>最新終値</th><th>前足比</th><th>H1本数</th><th>最終時刻 UTC</th></tr></thead><tbody id="overview"><tr><td colspan="5" class="muted">データ未読込</td></tr></tbody></table></div></section>
+<section class="panel"><h2>21通貨ペア・水平線接近一覧</h2><p class="muted">画像から選定した水平線のみを最新確定H1と照合。研究用スナップショットであり、外部通知・自動更新はありません。</p><div class="controls"><label>接近閾値（pips） <input id="globalThreshold" type="number" min="1" max="100" value="10"></label><button id="copyAlerts">接近一覧をコピー</button></div><p id="alertSummary" role="status" class="muted">データ未読込</p><div id="alerts" class="muted">データ未読込</div></section><section class="panel"><h2>価格チャート・画像選定水平線</h2><div class="controls"><label>通貨ペア <select id="pair"></select></label><label>時間足 <select id="period"><option value="H1">H1</option><option value="D1">D1</option><option value="W1">W1</option></select></label></div><p id="levels" class="muted">画像から選定した価格帯のみを重ねて表示します。未登録ペアは水平線なし。</p><svg id="chart" viewBox="0 0 900 350" role="img" aria-label="確定OHLC価格チャート"><text x="20" y="50" fill="#a5b6cf">CSVを読み込んでください</text></svg></section>
+<section class="panel"><h2>画像選定の水平線・接近状況</h2><label>接近閾値（pips） <input id="pipThreshold" type="number" min="1" max="100" value="10"></label><p class="muted">チャート画像から選定した抵抗帯・支持帯のみ表示。直近確定H1の高安が水平線に接触した場合も検出します。ブラウザ内表示のみで外部通知はしません。</p><div id="proximity" class="muted">データ未読込</div></section><section class="panel"><h2>8通貨・価格ベース強弱（24時間）</h2><p class="muted">H1確定足の24時間対数騰落率を、21ペアの基軸・決済通貨に符号付きで配分した相対指標（%）。ファンダ強弱とは別物です。全21ペアがそろい、時刻が一致した場合だけ計算します。</p><p id="priceStrengthStatus" role="status" class="muted">価格CSV待機中</p><div class="scroll"><table><thead><tr><th>順位</th><th>通貨</th><th>相対強弱（%）</th><th>対象ペア数</th></tr></thead><tbody id="priceStrengthRows"><tr><td colspan="4">未読込</td></tr></tbody></table></div></section>
+<section class="panel"><h2>21通貨ペア・ファンダ強弱ランキング</h2><p class="muted">基軸通貨−決済通貨の相対スコア（−5〜+5）。必要な検証済み要素が不足するペアは「未評価」とし、順位を付けません。価格モメンタムではなくファンダ評価です。</p><p id="pairStrengthStatus" role="status" class="muted">ファンダデータ待機中</p><div class="scroll"><table><thead><tr><th>順位</th><th>通貨ペア</th><th>強弱スコア</th><th>評価状態</th></tr></thead><tbody id="pairStrengthRows"><tr><td colspan="4">未読込</td></tr></tbody></table></div></section>
+<section class="panel"><h2>ファンダメンタル指標・通貨強弱</h2><p class="muted">公的統計の取得状況を表示。5要素の検証済み入力が不足する通貨は未評価です。</p><label>ファンダメンタルJSON（fundamental_latest.json） <input id="fundFile" type="file" accept=".json,application/json"></label><p id="fundStatus" class="warning">ファンダデータ未読込</p><p id="fundFreshness" class="muted"></p><div class="scroll"><table><thead><tr><th>通貨</th><th>強弱スコア</th><th>不足要素</th></tr></thead><tbody id="fundScores"></tbody></table></div><h3>公的データ取得状況</h3><div class="scroll"><table><thead><tr><th>指標</th><th>観測日</th><th>最新値</th><th>監査</th></tr></thead><tbody id="fundSources"></tbody></table></div></section><section class="panel"><h2>データ品質・制約</h2><p id="quality" class="muted">監査済みの研究用データのみ読み込み対象です。ファンダメンタル強弱スコア・急変通知・LINE通知は未接続です。</p></section>
+<footer class="muted">Research only · CSVの出所・時刻・欠損を確認してください。非公開GitHubの認証情報はブラウザに保存しません。</footer></main>
+<script>
+'use strict';
+const PAIRS=['USDJPY','EURJPY','GBPJPY','AUDJPY','NZDJPY','CADJPY','CHFJPY','EURUSD','GBPUSD','AUDUSD','NZDUSD','USDCAD','USDCHF','EURGBP','EURAUD','EURNZD','EURCHF','GBPAUD','GBPCHF','AUDNZD','AUDCHF'];
+const $=id=>document.getElementById(id),data=new Map();
+$('pair').innerHTML=PAIRS.map(p=>'<option>'+p+'</option>').join('');
+function parseCSV(csv,expected){
+ const lines=csv.replace(/^\uFEFF/,'').trim().split(/\r?\n/),headers=lines.shift().split(',').map(x=>x.trim());
+ const required=['Pair','StartUTC','EndUTC','Open','High','Low','Close','Status'];
+ if(required.some(k=>!headers.includes(k)))throw Error('研究用H1 CSVの列が不足: '+expected);
+ const ix=k=>headers.indexOf(k),rows=[];let prev=-Infinity;
+ for(const line of lines){if(!line.trim())continue;const c=line.split(',');if(c[ix('Pair')]!==expected)throw Error('通貨ペア不一致: '+expected);
+ const t=Date.parse(c[ix('StartUTC')]),end=Date.parse(c[ix('EndUTC')]);if(!Number.isFinite(t)||t<=prev||end-t!==3600000||end>Date.now())throw Error('H1時刻異常: '+expected);
+ const [o,h,l,close]=['Open','High','Low','Close'].map(k=>Number(c[ix(k)]));
+ if([o,h,l,close].some(x=>!Number.isFinite(x)||x<=0)||h<Math.max(o,close)||l>Math.min(o,close)||h<l)throw Error('OHLC異常: '+expected);
+ if(c[ix('Status')]!=='PROVISIONAL_NOT_TRADEABLE')throw Error('想定外の品質区分: '+expected);
+ rows.push({t,end,o,h,l,c:close});prev=t;
+ }if(!rows.length)throw Error('H1データが空: '+expected);return rows;
+}
+function iso(t){return new Date(t).toISOString().slice(0,16).replace('T',' ')}
+function aggregate(rows,period){
+ if(period==='H1')return rows;
+ const m=new Map();
+ for(const r of rows){const d=new Date(r.t),day=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()),key=period==='D1'?day:day-((d.getUTCDay()+6)%7)*86400000;
+ if(!m.has(key))m.set(key,{t:key,o:r.o,h:r.h,l:r.l,c:r.c,last:r.end});
+ else{const x=m.get(key);x.h=Math.max(x.h,r.h);x.l=Math.min(x.l,r.l);x.c=r.c;x.last=r.end;}
+ }
+ return [...m.values()].sort((a,b)=>a.t-b.t);
+}
+function completePrevious(rows,period){if(period==='H1')return null;const groups=aggregate(rows,period);return groups.length>=2?groups.at(-2):null}
+function confirmedSwings(rows,period,wing=2){
+ const groups=aggregate(rows,period);
+ // Last UTC day/week is still potentially forming. Never confirm using it.
+ const finished=groups.slice(0,-1),levels=[];
+ for(let i=wing;i<finished.length-wing;i++){
+  const c=finished[i],neighbors=finished.slice(i-wing,i).concat(finished.slice(i+1,i+wing+1));
+  if(neighbors.every(x=>c.h>x.h))levels.push({period,kind:'RESISTANCE',price:c.h,anchor:c.t,confirmed:finished[i+wing].t});
+  if(neighbors.every(x=>c.l<x.l))levels.push({period,kind:'SUPPORT',price:c.l,anchor:c.t,confirmed:finished[i+wing].t});
+ }
+ return levels;
+}
+// Human-reviewed chart-image zones; no automatic swing levels are displayed.
+const IMAGE_ZONES={NZDJPY:[
+ {kind:'RESISTANCE',low:88.50,high:89.00,period:'D1'},
+ {kind:'RESISTANCE',low:90.30,high:90.80,period:'D1'},
+ {kind:'RESISTANCE',low:92.00,high:92.60,period:'D1'},
+ {kind:'SUPPORT',low:87.30,high:87.70,period:'D1'},
+ {kind:'SUPPORT',low:85.80,high:86.30,period:'D1'},
+ {kind:'SUPPORT',low:83.80,high:84.50,period:'D1'}
+],AUDJPY:[
+ {kind:'RESISTANCE',low:108.80,high:109.80,period:'D1'},
+ {kind:'RESISTANCE',low:110.80,high:112.00,period:'D1'},
+ {kind:'RESISTANCE',low:113.50,high:115.00,period:'D1'},
+ {kind:'SUPPORT',low:106.80,high:107.50,period:'D1'},
+ {kind:'SUPPORT',low:103.50,high:104.50,period:'D1'},
+ {kind:'SUPPORT',low:99.50,high:101.00,period:'D1'}
+],USDJPY:[
+ {kind:'RESISTANCE',low:159.80,high:160.50,period:'D1'},
+ {kind:'RESISTANCE',low:161.50,high:162.20,period:'D1'},
+ {kind:'RESISTANCE',low:163.50,high:164.20,period:'D1'},
+ {kind:'SUPPORT',low:157.50,high:158.50,period:'D1'},
+ {kind:'SUPPORT',low:154.00,high:155.00,period:'D1'},
+ {kind:'SUPPORT',low:150.50,high:152.00,period:'D1'}
+],EURJPY:[
+ {kind:'RESISTANCE',low:176.00,high:177.20,period:'D1'},
+ {kind:'RESISTANCE',low:179.00,high:180.50,period:'D1'},
+ {kind:'RESISTANCE',low:184.00,high:186.00,period:'D1'},
+ {kind:'SUPPORT',low:174.00,high:175.00,period:'D1'},
+ {kind:'SUPPORT',low:170.50,high:172.00,period:'D1'},
+ {kind:'SUPPORT',low:164.00,high:166.00,period:'D1'}
+],GBPJPY:[
+ {kind:'RESISTANCE',low:211.00,high:213.00,period:'D1'},
+ {kind:'RESISTANCE',low:215.00,high:216.50,period:'D1'},
+ {kind:'RESISTANCE',low:218.00,high:220.00,period:'D1'},
+ {kind:'SUPPORT',low:207.00,high:209.00,period:'D1'},
+ {kind:'SUPPORT',low:203.00,high:205.00,period:'D1'},
+ {kind:'SUPPORT',low:198.00,high:200.00,period:'D1'}
+],CADJPY:[
+ {kind:'RESISTANCE',low:112.00,high:112.80,period:'D1'},
+ {kind:'RESISTANCE',low:113.80,high:114.80,period:'D1'},
+ {kind:'RESISTANCE',low:116.00,high:117.20,period:'D1'},
+ {kind:'SUPPORT',low:110.50,high:111.30,period:'D1'},
+ {kind:'SUPPORT',low:108.00,high:109.00,period:'D1'},
+ {kind:'SUPPORT',low:103.00,high:105.00,period:'D1'}
+],CHFJPY:[
+ {kind:'RESISTANCE',low:191.00,high:193.00,period:'D1'},
+ {kind:'RESISTANCE',low:197.00,high:199.00,period:'D1'},
+ {kind:'RESISTANCE',low:202.00,high:204.00,period:'D1'},
+ {kind:'SUPPORT',low:187.50,high:189.00,period:'D1'},
+ {kind:'SUPPORT',low:183.00,high:185.00,period:'D1'},
+ {kind:'SUPPORT',low:177.00,high:180.00,period:'D1'}
+],EURUSD:[
+ {kind:'RESISTANCE',low:1.1100,high:1.1200,period:'D1'},
+ {kind:'RESISTANCE',low:1.1350,high:1.1500,period:'D1'},
+ {kind:'RESISTANCE',low:1.1700,high:1.1850,period:'D1'},
+ {kind:'SUPPORT',low:1.0900,high:1.1000,period:'D1'},
+ {kind:'SUPPORT',low:1.0700,high:1.0800,period:'D1'},
+ {kind:'SUPPORT',low:1.0300,high:1.0500,period:'D1'}
+],AUDUSD:[
+ {kind:'RESISTANCE',low:0.6900,high:0.6950,period:'D1'},
+ {kind:'RESISTANCE',low:0.7020,high:0.7080,period:'D1'},
+ {kind:'RESISTANCE',low:0.7150,high:0.7250,period:'D1'},
+ {kind:'SUPPORT',low:0.6700,high:0.6750,period:'D1'},
+ {kind:'SUPPORT',low:0.6450,high:0.6550,period:'D1'},
+ {kind:'SUPPORT',low:0.6150,high:0.6250,period:'D1'}
+],NZDUSD:[
+ {kind:'RESISTANCE',low:0.5580,high:0.5650,period:'D1'},
+ {kind:'RESISTANCE',low:0.5720,high:0.5820,period:'D1'},
+ {kind:'RESISTANCE',low:0.5950,high:0.6100,period:'D1'},
+ {kind:'SUPPORT',low:0.5450,high:0.5520,period:'D1'},
+ {kind:'SUPPORT',low:0.5350,high:0.5420,period:'D1',confidence:'LOW',note:'PROVISIONAL_BELOW_VISIBLE_HISTORY'},
+ {kind:'SUPPORT',low:0.5200,high:0.5300,period:'D1',confidence:'LOW',note:'PROVISIONAL_BELOW_VISIBLE_HISTORY'}
+],USDCAD:[
+ {kind:'RESISTANCE',low:1.4280,high:1.4350,period:'D1'},
+ {kind:'RESISTANCE',low:1.4450,high:1.4550,period:'D1'},
+ {kind:'RESISTANCE',low:1.4850,high:1.4950,period:'D1',confidence:'LOW',note:'USER_DRAWN_LINE_UNVERIFIED'},
+ {kind:'SUPPORT',low:1.4000,high:1.4100,period:'D1'},
+ {kind:'SUPPORT',low:1.3850,high:1.3950,period:'D1'},
+ {kind:'SUPPORT',low:1.3550,high:1.3700,period:'D1'}
+],USDCHF:[
+ {kind:'RESISTANCE',low:0.8400,high:0.8500,period:'D1'},
+ {kind:'RESISTANCE',low:0.8650,high:0.8800,period:'D1'},
+ {kind:'RESISTANCE',low:0.9000,high:0.9150,period:'D1'},
+ {kind:'SUPPORT',low:0.8200,high:0.8300,period:'D1'},
+ {kind:'SUPPORT',low:0.7950,high:0.8050,period:'D1'},
+ {kind:'SUPPORT',low:0.7650,high:0.7800,period:'D1'}
+],EURGBP:[
+ {kind:'RESISTANCE',low:0.8480,high:0.8540,period:'D1'},
+ {kind:'RESISTANCE',low:0.8580,high:0.8700,period:'D1'},
+ {kind:'RESISTANCE',low:0.8780,high:0.8850,period:'D1'},
+ {kind:'SUPPORT',low:0.8300,high:0.8350,period:'D1'},
+ {kind:'SUPPORT',low:0.8200,high:0.8240,period:'D1',note:'USER_DRAWN_LINE_NEARBY'},
+ {kind:'SUPPORT',low:0.8120,high:0.8180,period:'D1',confidence:'LOW',note:'UNCONFIRMED_BELOW_VISIBLE_SWINGS'}
+],EURAUD:[
+ {kind:'RESISTANCE',low:1.6300,high:1.6500,period:'D1'},
+ {kind:'RESISTANCE',low:1.6700,high:1.6900,period:'D1'},
+ {kind:'RESISTANCE',low:1.7500,high:1.7800,period:'D1'},
+ {kind:'SUPPORT',low:1.6000,high:1.6150,period:'D1'},
+ {kind:'SUPPORT',low:1.5750,high:1.5900,period:'D1'},
+ {kind:'SUPPORT',low:1.5400,high:1.5600,period:'D1',confidence:'LOW',note:'UNCONFIRMED_BELOW_VISIBLE_HISTORY'}
+],EURNZD:[
+ {kind:'RESISTANCE',low:2.0000,high:2.0150,period:'D1'},
+ {kind:'RESISTANCE',low:2.0250,high:2.0400,period:'D1'},
+ {kind:'RESISTANCE',low:2.0500,high:2.0650,period:'D1'},
+ {kind:'SUPPORT',low:1.9750,high:1.9850,period:'D1'},
+ {kind:'SUPPORT',low:1.9500,high:1.9650,period:'D1'},
+ {kind:'SUPPORT',low:1.9200,high:1.9400,period:'D1'}
+],EURCHF:[
+ {kind:'RESISTANCE',low:0.9320,high:0.9380,period:'D1'},
+ {kind:'RESISTANCE',low:0.9420,high:0.9490,period:'D1'},
+ {kind:'RESISTANCE',low:0.9550,high:0.9650,period:'D1'},
+ {kind:'SUPPORT',low:0.9190,high:0.9250,period:'D1'},
+ {kind:'SUPPORT',low:0.9100,high:0.9150,period:'D1'},
+ {kind:'SUPPORT',low:0.8980,high:0.9050,period:'D1'}
+],GBPAUD:[
+ {kind:'RESISTANCE',low:1.9500,high:1.9700,period:'D1'},
+ {kind:'RESISTANCE',low:2.0000,high:2.0200,period:'D1'},
+ {kind:'RESISTANCE',low:2.0500,high:2.1000,period:'D1'},
+ {kind:'SUPPORT',low:1.9150,high:1.9300,period:'D1'},
+ {kind:'SUPPORT',low:1.8900,high:1.9050,period:'D1'},
+ {kind:'SUPPORT',low:1.8500,high:1.8700,period:'D1'}
+],GBPCHF:[
+ {kind:'RESISTANCE',low:1.1080,high:1.1150,period:'D1'},
+ {kind:'RESISTANCE',low:1.1250,high:1.1350,period:'D1'},
+ {kind:'RESISTANCE',low:1.1400,high:1.1550,period:'D1'},
+ {kind:'SUPPORT',low:1.0950,high:1.1030,period:'D1'},
+ {kind:'SUPPORT',low:1.0750,high:1.0850,period:'D1'},
+ {kind:'SUPPORT',low:1.0450,high:1.0600,period:'D1'}
+],AUDNZD:[
+ {kind:'RESISTANCE',low:1.2320,high:1.2400,period:'D1'},
+ {kind:'RESISTANCE',low:1.2420,high:1.2500,period:'D1'},
+ {kind:'RESISTANCE',low:1.2550,high:1.2650,period:'D1',confidence:'LOW',note:'UNCONFIRMED_ABOVE_VISIBLE_HISTORY'},
+ {kind:'SUPPORT',low:1.2180,high:1.2250,period:'D1'},
+ {kind:'SUPPORT',low:1.2050,high:1.2150,period:'D1'},
+ {kind:'SUPPORT',low:1.1850,high:1.1950,period:'D1'}
+],AUDCHF:[
+ {kind:'RESISTANCE',low:0.5720,high:0.5780,period:'D1'},
+ {kind:'RESISTANCE',low:0.5820,high:0.5880,period:'D1'},
+ {kind:'RESISTANCE',low:0.5950,high:0.6050,period:'D1'},
+ {kind:'SUPPORT',low:0.5620,high:0.5680,period:'D1'},
+ {kind:'SUPPORT',low:0.5480,high:0.5550,period:'D1'},
+ {kind:'SUPPORT',low:0.5180,high:0.5250,period:'D1'}
+],GBPUSD:[
+ {kind:'RESISTANCE',low:1.3300,high:1.3420,period:'D1'},
+ {kind:'RESISTANCE',low:1.3500,high:1.3600,period:'D1'},
+ {kind:'RESISTANCE',low:1.3700,high:1.3850,period:'D1'},
+ {kind:'SUPPORT',low:1.3100,high:1.3200,period:'D1'},
+ {kind:'SUPPORT',low:1.2850,high:1.3000,period:'D1'},
+ {kind:'SUPPORT',low:1.2300,high:1.2500,period:'D1'}
+]};
+function imageZones(pair){return IMAGE_ZONES[pair]||[];}
+function zoneEvents(pair,rows,threshold){
+ if(!rows||!Number.isFinite(threshold)||threshold<=0||threshold>100)return [];
+ const last=rows.at(-1),pip=pair.endsWith('JPY')?.01:.0001;
+ return imageZones(pair).map(zone=>{
+  const touched=last.h>=zone.low&&last.l<=zone.high;
+  const distance=last.c<zone.low?(zone.low-last.c)/pip:last.c>zone.high?(last.c-zone.high)/pip:0;
+  return {...zone,price:(zone.low+zone.high)/2,distance,touched,pair,latestUTC:iso(last.end),source:'IMAGE_ESTIMATED'};
+ }).filter(z=>z.touched||z.distance<=threshold);
+}
+function render(){
+ renderAlerts();
+ $('count').textContent=data.size+' / 21';
+ const times=[...data.values()].map(x=>x.at(-1).end);
+ $('latest').textContent=times.length?iso(Math.max(...times)):'—';
+ $('overview').innerHTML=PAIRS.filter(p=>data.has(p)).map(p=>{const r=data.get(p),a=r.at(-1),b=r.at(-2),delta=b?(a.c-b.c):0;return '<tr><td>'+p+'</td><td>'+a.c.toFixed(p.endsWith('JPY')?3:5)+'</td><td style="color:'+(delta>=0?'#6be3bb':'#ff9ab1')+'">'+(delta>=0?'+':'')+delta.toFixed(p.endsWith('JPY')?3:5)+'</td><td>'+r.length+'</td><td>'+iso(a.end)+'</td></tr>'}).join('')||'<tr><td colspan="5">データ未読込</td></tr>';
+ const pair=$('pair').value,rows=data.get(pair);if(!rows){$('chart').innerHTML='<text x="20" y="50" fill="#a5b6cf">このペアのデータは未読込です</text>';return}
+ const period=$('period').value,bars=aggregate(rows,period).slice(-70),all=bars.flatMap(x=>[x.h,x.l]),min=Math.min(...all),max=Math.max(...all),span=Math.max(max-min,1e-8),w=900,h=350,pad=35;
+ const X=i=>pad+(i+.5)*(w-pad*2)/bars.length,Y=v=>h-pad-(v-min)/span*(h-pad*2);
+ const parts=['<rect width="900" height="350" fill="#15243a"/>'];
+ bars.forEach((r,i)=>{const x=X(i),color=r.c>=r.o?'#6be3bb':'#ff9ab1',bw=Math.max(2,(w-pad*2)/bars.length*.55);
+ parts.push('<line x1="'+x+'" y1="'+Y(r.h)+'" x2="'+x+'" y2="'+Y(r.l)+'" stroke="'+color+'"/>');
+ parts.push('<rect x="'+(x-bw/2)+'" y="'+Math.min(Y(r.o),Y(r.c))+'" width="'+bw+'" height="'+Math.max(1,Math.abs(Y(r.o)-Y(r.c)))+'" fill="'+color+'"/>')});
+ const threshold=Number($('pipThreshold').value),proximity=zoneEvents(pair,rows,threshold);
+ $('proximity').textContent=proximity.length?proximity.map(l=>(l.kind==='RESISTANCE'?'抵抗帯 ':'支持帯 ')+l.low.toFixed(3)+'〜'+l.high.toFixed(3)+' / '+l.distance.toFixed(1)+' pips'+(l.touched?'（接触）':'')).join(' ｜ '):imageZones(pair).length?'画像由来の水平線への接近なし':'画像由来の水平線は未登録';
+ const labels=[];
+ for(const z of imageZones(pair)){labels.push((z.kind==='RESISTANCE'?'抵抗帯 ':'支持帯 ')+z.low.toFixed(3)+'〜'+z.high.toFixed(3));const yTop=Y(Math.min(max,z.high)),yBottom=Y(Math.max(min,z.low));if(z.high<min||z.low>max)continue;const top=Math.min(yTop,yBottom),height=Math.max(1,Math.abs(yBottom-yTop));parts.push('<rect x="35" y="'+top+'" width="830" height="'+height+'" fill="'+(z.kind==='RESISTANCE'?'#f5a56b':'#69d4ba')+'" fill-opacity=".18"/>');}
+ parts.push('<text x="38" y="20" fill="#a5b6cf">'+pair+' / '+period+' / '+bars.length+' bars</text>');
+ $('chart').innerHTML=parts.join('');$('levels').textContent=labels.join(' ｜ ')||'確定済みの日足・週足が不足しています';
+}
+function accept(pair,csv){if(!PAIRS.includes(pair))throw Error('対象外ペア: '+pair);data.set(pair,parseCSV(csv,pair))}
+$('files').addEventListener('change',async e=>{let good=0,errors=[];for(const f of e.target.files){const m=f.name.match(/^([A-Z]{6})\.csv$/);if(!m){errors.push(f.name+': ファイル名はUSDJPY.csv形式');continue}try{accept(m[1],await f.text());good++}catch(err){errors.push(f.name+': '+err.message)}}$('status').textContent=good+'件読込。'+(errors.length?errors.join(' / '):'');render()});
+$('load').addEventListener('click',async()=>{const btn=$('load');btn.disabled=true;let good=0,errors=[];for(const p of PAIRS){try{const r=await fetch('../research_data/fx_sessions/H1/'+p+'.csv',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);accept(p,await r.text());good++}catch(e){errors.push(p+': '+e.message)}}$('status').textContent=good+' / 21ペア取得。'+(errors.length?'配信パスを確認するかCSVを手動選択してください。':'全ペア読み込み完了');$('quality').textContent='取得成功: '+good+'ペア。データ品質区分 PROVISIONAL_NOT_TRADEABLE。'+(errors.length?' 失敗: '+errors.join(', '):'');btn.disabled=false;render()});
+$('pair').addEventListener('change',render);$('period').addEventListener('change',render);$('pipThreshold').addEventListener('change',render);
+
+
+let alertText='';
+function renderAlerts(){
+ const threshold=Number($('globalThreshold').value);
+ const events=[];
+ for(const pair of PAIRS){const rows=data.get(pair);if(rows)events.push(...zoneEvents(pair,rows,threshold));}
+ events.sort((a,b)=>Number(b.touched)-Number(a.touched)||a.distance-b.distance);
+ const count=new Set(events.map(e=>e.pair)).size;
+ $('alertSummary').textContent='検出 '+events.length+'件 / '+count+'ペア（接触 '+events.filter(e=>e.touched).length+'件）';
+ alertText=events.map(e=>e.pair+' '+e.period+' '+e.kind+' '+e.low+'-'+e.high+' '+e.distance.toFixed(1)+' pips '+(e.touched?'TOUCHED':'NEAR')+' '+e.latestUTC+' UTC').join('\\n');
+ $('alerts').innerHTML=events.length?events.slice(0,100).map(e=>'<div class="alert-row"><div><strong>'+e.pair+' · '+e.period+' '+(e.kind==='RESISTANCE'?'抵抗':'支持')+'</strong><small>水平線 '+(e.low.toFixed(3)+'〜'+e.high.toFixed(3))+' · '+e.latestUTC+' UTC</small></div><strong class="'+(e.touched?'alert-touch':'alert-near')+'">'+(e.touched?'接触':'接近')+' '+e.distance.toFixed(1)+' pips</strong></div>').join(''):'該当なし（またはデータ不足）';
+}
+$('globalThreshold').addEventListener('change',render);
+// Automatic data loading on page open. Embedded snapshots work from file://;
+// same-origin CSV fetch works when hosted with research_data alongside dashboard.
+// iPhone/Safari: no file selection or manual CSV upload is required.
+// Hosted dashboards fetch all 21 research CSVs on open and every five minutes.
+// Embedded offline snapshots remain usable without a network, but are not live.
+let researchLoadBusy=false;
+const researchLastSuccessByPair=new Map();
+async function autoLoadResearch(){
+ if(researchLoadBusy)return;
+ researchLoadBusy=true;
+ try{
+  const embedded=document.getElementById('embedded-h1');
+  if(embedded&&data.size===0){try{
+   const snapshot=JSON.parse(embedded.textContent);
+   if(Object.keys(snapshot).length!==PAIRS.length||PAIRS.some(p=>typeof snapshot[p]!=='string'))throw Error('21ペアの埋め込みデータが不完全');
+   const parsed=new Map();for(const pair of PAIRS)parsed.set(pair,parseCSV(snapshot[pair],pair));
+   data.clear();for(const [p,rows] of parsed)data.set(p,rows);
+   $('status').textContent='21ペアの研究用スナップショットを自動読込しました（ライブ価格ではありません）';
+   render();
+  }catch(err){$('status').textContent='埋め込みデータ読込エラー: '+err.message;}}
+  if(location.protocol==='file:'){
+   if(!embedded)$('status').textContent='CSV自動取得にはオンライン版のURLが必要です。オフライン版は埋め込み済みの研究データのみ表示します。';
+   return;
+  }
+  $('status').textContent='21ペアの研究用CSVを自動更新中…';
+  const result=await Promise.allSettled(PAIRS.map(async pair=>{
+   const response=await fetch('../research_data/fx_sessions/H1/'+pair+'.csv',{cache:'no-store'});
+   if(!response.ok)throw Error(pair+': HTTP '+response.status);
+   return [pair,parseCSV(await response.text(),pair)];
+  }));
+  const failures=result.filter(x=>x.status==='rejected');
+  if(failures.length){
+   $('status').textContent='CSV自動取得が不完全（'+(21-failures.length)+'/21）。'+(data.size?'前回の研究データを維持しています。':'表示は更新しません。')+' 公開先のCSV配信を確認してください。';
+   return;
+  }
+  const parsed=new Map(result.map(x=>x.value));
+  const latest=Math.max(...[...parsed.values()].map(rows=>rows.at(-1).end));
+  if(!Number.isFinite(latest))throw Error('最新H1時刻を確認できません');
+  const regressions=PAIRS.filter(p=>{
+   const previous=researchLastSuccessByPair.get(p);
+   return previous!==undefined&&parsed.get(p).at(-1).end<previous;
+  });
+  if(regressions.length){
+   $('status').textContent='CSVの時刻が逆行したため前回の研究データを維持: '+regressions.join(', ');
+   return;
+  }
+  for(const p of PAIRS)researchLastSuccessByPair.set(p,parsed.get(p).at(-1).end);
+  data.clear();for(const [p,rows] of parsed)data.set(p,rows);
+  const ageHours=(Date.now()-latest)/3600000;
+  const freshness=ageHours>72?' / ⚠ 最終H1から72時間超（週末・休場・取得停止の可能性）':ageHours>3?' / ⚠ 最終H1から3時間超（鮮度を確認）':'';
+  $('status').textContent='21ペアの研究用CSVを自動取得しました。最新H1(UTC): '+iso(latest)+' / 5分ごとに再確認'+freshness+'（ライブ配信ではありません）';
+  render();
+ }catch(err){$('status').textContent='CSV自動更新エラー: '+err.message;}
+ finally{researchLoadBusy=false;}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ autoLoadResearch();
+ if(location.protocol!=='file:'){
+  setInterval(()=>{if(!document.hidden)autoLoadResearch();},300000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoLoadResearch();});
+ }
+});
+
+
+$('copyAlerts').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(alertText||'該当なし')}catch(e){$('alertSummary').textContent+=' / コピー失敗'}});
+const escFund=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function showFundamental(d){if(!d||d.mode!=='RESEARCH_ONLY'||!d.currencies||!d.sources)throw Error('研究用ファンダデータ形式が不正');$('fundStatus').textContent='取得UTC: '+(d.generated_at_utc||'不明')+' / ランキング評価済み: '+(d.ranked_count??'不明')+' ペア';const stamp=Date.parse(d.generated_at_utc||'');const age=Date.now()-stamp;$('fundFreshness').textContent=!Number.isFinite(stamp)?'更新時刻を検証できません':age<0?'未来時刻のデータ：要確認':age>86400000?'最終取得から24時間超：鮮度注意':'最終取得から24時間以内（個々の観測日の鮮度とは異なります）';const ranked=Array.isArray(d.pairs)?d.pairs:[];
+ const pairRows=$('pairStrengthRows');
+ if(pairRows){
+  pairRows.replaceChildren();
+  $('pairStrengthStatus').textContent='評価済み '+ranked.filter(p=>p.status==='RANKED'&&p.score_difference!==null&&p.score_difference!==undefined&&Number.isFinite(Number(p.score_difference))).length+' / 21ペア（データ取得日時と検証済み要素を要確認）';
+  for(const p of ranked){
+   const tr=document.createElement('tr');
+   const ready=p.status==='RANKED'&&p.score_difference!==null&&Number.isFinite(Number(p.score_difference));
+   for(const value of [ready?(p.rank??'—'):'—',p.pair||'—',ready?Number(p.score_difference).toFixed(2):'未評価',ready?'評価済み':'要素不足']){
+    const td=document.createElement('td');td.textContent=String(value);tr.append(td);
+   }
+   pairRows.append(tr);
+  }
+  if(!ranked.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=4;td.textContent='通貨ペア強弱のデータなし';tr.append(td);pairRows.append(tr);}
+ }
+ $('fundScores').innerHTML=Object.entries(d.currencies).map(([k,v])=>'<tr><td>'+escFund(k)+'</td><td>'+(v.status==='SCORED'&&typeof v.score==='number'?v.score.toFixed(2):'未評価')+'</td><td>'+escFund((v.missing_factors||[]).join(', ')||'—')+'</td></tr>').join('');$('fundSources').innerHTML=Object.entries(d.sources).map(([k,v])=>{const o=(v.observations||[])[0]||{};return '<tr><td>'+escFund(k)+'</td><td>'+escFund(o.date||'—')+'</td><td>'+escFund(o.value??'—')+'</td><td>'+escFund(v.audit?.ok===true?'OK':'要確認')+'</td></tr>'}).join('');}
+// Automatically load research-only fundamentals on iPhone and desktop.
+// Embedded offline data is the fallback; hosted JSON is refreshed periodically.
+let fundamentalFetchBusy=false;
+async function autoLoadFundamentals(){
+ if(fundamentalFetchBusy)return;
+ fundamentalFetchBusy=true;
+ try{
+  const embedded=document.getElementById('embedded-fundamental');
+  if(embedded&&$('fundStatus').textContent.includes('未読込')){
+   try{const snapshot=JSON.parse(embedded.textContent);if(snapshot)showFundamental(snapshot);}catch(e){console.warn('Embedded fundamentals invalid:',e);}
+  }
+  if(location.protocol==='file:')return;
+  const response=await fetch('../fundamental_output/fundamental_latest.json',{cache:'no-store'});
+  if(!response.ok)throw Error('HTTP '+response.status);
+  const result=await response.json();
+  showFundamental(result);
+ }catch(err){
+  const current=$('fundStatus').textContent;
+  $('fundStatus').textContent=(current&&!current.includes('未読込')?current+' / ':'')+'ファンダ自動取得不可: '+err.message+'（公開先のJSON配信を確認）';
+ }finally{fundamentalFetchBusy=false;}
+}
+document.addEventListener('DOMContentLoaded',()=>{
+ autoLoadFundamentals();
+ if(location.protocol!=='file:'){
+  setInterval(()=>{if(!document.hidden)autoLoadFundamentals();},900000);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)autoLoadFundamentals();});
+ }
+});
+$('fundFile').addEventListener('change',async e=>{try{showFundamental(JSON.parse(await e.target.files[0].text()))}catch(err){$('fundStatus').textContent='読み込み失敗: '+err.message}});
+
+// Research-only presentation layer: reuses existing validated data and confirmed swings.
+let deskFilter='ALL';
+function deskMatches(pair){return deskFilter==='ALL'||(deskFilter==='JPY'&&pair.endsWith('JPY'))||(deskFilter==='USD'&&pair.includes('USD'))||(deskFilter==='OTHER'&&!pair.endsWith('JPY')&&!pair.includes('USD'));}
+function priceStrength24h(){
+ const currencies=['USD','EUR','GBP','JPY','AUD','NZD','CAD','CHF'];
+ if(PAIRS.some(p=>!data.has(p)))return {error:'21ペアがそろっていません'};
+ const ends=PAIRS.map(p=>data.get(p).at(-1).end);
+ const newest=Math.max(...ends),oldest=Math.min(...ends);
+ if(newest!==oldest)return {error:'ペア間の最終H1時刻が一致しません（24時間比較を保留）'};
+ const totals=Object.fromEntries(currencies.map(c=>[c,{sum:0,count:0}]));
+ for(const pair of PAIRS){
+  const rows=data.get(pair),last=rows.at(-1),target=last.end-24*3600000;
+  // Use a confirmed bar ending at or before the 24h anchor; never look forward.
+  let anchor=null;
+  for(let i=rows.length-1;i>=0;i--){if(rows[i].end<=target){anchor=rows[i];break;}}
+  if(!anchor||anchor.end!==target)return {error:pair+' の24時間前の同時刻H1が不足しています'};
+  const change=100*Math.log(last.c/anchor.c);
+  if(!Number.isFinite(change))return {error:pair+' の騰落率が不正です'};
+  const base=pair.slice(0,3),quote=pair.slice(3);
+  totals[base].sum+=change;totals[base].count++;
+  totals[quote].sum-=change;totals[quote].count++;
+ }
+ const result=currencies.map(c=>({currency:c,score:totals[c].sum/totals[c].count,count:totals[c].count}));
+ const mean=result.reduce((sum,r)=>sum+r.score,0)/result.length;
+ return {rows:result.map(r=>({...r,score:r.score-mean})).sort((a,b)=>b.score-a.score),asof:newest};
+}
+function renderPriceStrength(){
+ const result=priceStrength24h(),body=$('priceStrengthRows'),status=$('priceStrengthStatus');
+ body.replaceChildren();
+ if(result.error){status.textContent='算出保留：'+result.error;const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=4;td.textContent='不完全データのため強弱は表示しません';tr.append(td);body.append(tr);return;}
+ status.textContent='基準H1 UTC: '+iso(result.asof)+' / 24時間・相対騰落率（売買判断には使用不可）';
+ result.rows.forEach((r,i)=>{const tr=document.createElement('tr');for(const value of [i+1,r.currency,(r.score>=0?'+':'')+r.score.toFixed(3),r.count]){const td=document.createElement('td');td.textContent=String(value);tr.append(td);}body.append(tr);});
+}
+function deskUpdate(){
+ const loaded=PAIRS.filter(p=>data.has(p));$('deskLoaded').textContent=loaded.length+' / 21';
+ const ends=loaded.map(p=>data.get(p).at(-1).end);$('deskLatest').textContent=ends.length?iso(Math.max(...ends)):'—';
+ const threshold=Number($('globalThreshold').value);const events=[];
+ for(const pair of loaded){const rows=data.get(pair);for(const zone of zoneEvents(pair,rows,threshold))events.push({pair,level:{...zone,price:(zone.low+zone.high)/2},distance:zone.distance,touched:zone.touched});}
+ $('deskEvents').textContent=loaded.length?String(events.length):'—';$('deskTouches').textContent=loaded.length?String(events.filter(e=>e.touched).length):'—';
+ const visible=events.filter(e=>deskMatches(e.pair)).sort((a,b)=>Number(b.touched)-Number(a.touched)||a.distance-b.distance);
+ const list=$('deskPriority');list.replaceChildren();if(!visible.length){const p=document.createElement('p');p.className='desk-empty';p.textContent=loaded.length?'この条件に一致する水平線接近はありません':'研究用CSVが未読込です';list.append(p);}else for(const e of visible.slice(0,80)){const row=document.createElement('div');row.className='desk-item';const left=document.createElement('div');const btn=document.createElement('button');btn.type='button';btn.textContent=e.pair;btn.addEventListener('click',()=>{$('pair').value=e.pair;render();$('chart').scrollIntoView({behavior:'smooth',block:'center'});});const desc=document.createElement('small');desc.className='desk-subtle';desc.textContent=' '+e.level.period+' '+(e.level.kind==='SUPPORT'?'支持':'抵抗')+' '+(e.level.low.toFixed(3)+'〜'+e.level.high.toFixed(3));left.append(btn,desc);const pill=document.createElement('span');pill.className='desk-pill '+(e.touched?'touch':'near');pill.textContent=(e.touched?'接触':'接近')+' '+e.distance.toFixed(1)+' pips';row.append(left,pill);list.append(row);}
+ const latest=ends.length?Math.max(...ends):NaN,earliest=ends.length?Math.min(...ends):NaN;const divergent=ends.length>1&&latest-earliest>3600000;
+ const health=$('deskHealth');health.replaceChildren();const lines=['品質区分：PROVISIONAL_NOT_TRADEABLE','取得：'+loaded.length+'/21ペア','時刻整合：'+(!ends.length?'未判定':divergent?'ペア間1時間超の差あり':'最大差1時間以内'),'最新足：'+(ends.length?iso(latest)+' UTC':'未読込'),'水平線：画像から選定した水平線のみ'];for(const l of lines){const d=document.createElement('div');d.textContent=l;health.append(d);}if(divergent||loaded.length!==21){const w=document.createElement('strong');w.textContent=' 不完全データ：研究上の判断に注意';health.append(w);}
+ document.querySelectorAll('#overview tr').forEach(tr=>{const p=tr.cells?.[0]?.textContent;tr.hidden=Boolean(p&&PAIRS.includes(p)&&!deskMatches(p));if(p&&PAIRS.includes(p)){tr.dataset.deskPair=p;tr.onclick=()=>{$('pair').value=p;render();$('chart').scrollIntoView({behavior:'smooth',block:'center'});};}});
+}
+const deskOriginalRender=render;render=function(){deskOriginalRender();deskUpdate();renderPriceStrength();};
+document.querySelectorAll('[data-desk-filter]').forEach(btn=>btn.addEventListener('click',()=>{deskFilter=btn.dataset.deskFilter;document.querySelectorAll('[data-desk-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));deskUpdate();}));
+</script><script>
+// PWA registration is only attempted on HTTPS or localhost; file:// remains a portable snapshot.
+if('serviceWorker' in navigator && (location.protocol==='https:' || location.hostname==='localhost')){
+ window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(err=>console.warn('PWA shell unavailable:',err)));
+}
+</script></body></html>
