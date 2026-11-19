@@ -429,7 +429,10 @@ function autoTechnicalEvents(pair,rows,threshold){
   const finished=bars.filter(b=>b.t+(period==='H4'?14400000:86400000)<=last.end);
   if(finished.length<7)continue;
   const levels=[];
+  // Only levels anchored within the past 30 days; older levels create excessive repeat alerts.
+  const oldestAnchor=last.end-30*86400000;
   for(let i=2;i<finished.length-2;i++){
+   if(finished[i].t<oldestAnchor)continue;
    const b=finished[i],neighbors=finished.slice(i-2,i).concat(finished.slice(i+1,i+3));
    if(neighbors.every(n=>b.h>n.h))levels.push({kind:'RESISTANCE',price:b.h,anchor:b.t});
    if(neighbors.every(n=>b.l<n.l))levels.push({kind:'SUPPORT',price:b.l,anchor:b.t});
@@ -460,10 +463,13 @@ function autoTechnicalEvents(pair,rows,threshold){
    const confirmedSupport=previousSupportRejection&&last.c>prev.h&&last.c>high;
    const confirmedResistance=previousResistanceRejection&&last.c<prev.l&&last.c<low;
    // Do not treat a still-forming H1 candle as an alert.
+   // A repeated reaction on the same level in consecutive H1 bars is not a fresh alert.
+   const previousTouched=prev.h>=low&&prev.l<=high;
+   const repeatedTouch=previousTouched&&touched;
    const type=upBreak||downBreak?'BREAK':
      confirmedSupport||confirmedResistance?'CONFIRMED_REJECTION':
-     supportRejection||resistanceRejection?'REJECTION':
-     touched?'TOUCH':distance<=threshold?'NEAR':null;
+     (supportRejection||resistanceRejection)&&!repeatedTouch?'REJECTION':
+     touched&&!previousTouched?'TOUCH':distance<=threshold?'NEAR':null;
    if(type)events.push({pair,period,...c,distance,touched,type,end:last.end});
   }
  }
