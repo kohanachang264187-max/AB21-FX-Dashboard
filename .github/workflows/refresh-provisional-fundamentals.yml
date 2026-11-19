@@ -1,5 +1,10 @@
 name: Refresh provisional currency rankings
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/update_provisional_fundamental.py'
+      - '.github/workflows/refresh-provisional-fundamentals.yml'
   workflow_dispatch:
   schedule:
     - cron: '17 */3 * * 1-5'
