@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0",
   "mode": "RESEARCH_ONLY",
-  "generated_at_utc": "2026-11-19T03:51:58.566422+00:00",
+  "generated_at_utc": "2026-11-19T15:43:57.217701+00:00",
   "ranked_count": 0,
   "provisional_count": 21,
   "provisional_method": "ECB five-observation FX reference-rate momentum; NOT macro fundamentals; missing all five macro factors",
-  "source_observation_start": "2026-11-11",
-  "source_observation_end": "2026-11-18",
+  "source_observation_start": "2026-11-12",
+  "source_observation_end": "2026-11-19",
   "currencies": {
     "USD": {
       "status": "PROVISIONAL",
-      "score": -5.0,
+      "score": -3.595,
       "missing_factors": [
         "policy_rate",
         "inflation",
@@ -22,7 +22,7 @@
     },
     "EUR": {
       "status": "PROVISIONAL",
-      "score": 2.135,
+      "score": 0.678,
       "missing_factors": [
         "policy_rate",
         "inflation",
@@ -34,7 +34,7 @@
     },
     "JPY": {
       "status": "PROVISIONAL",
-      "score": -4.431,
+      "score": -2.689,
       "missing_factors": [
         "policy_rate",
         "inflation",
@@ -46,7 +46,7 @@
     },
     "GBP": {
       "status": "PROVISIONAL",
-      "score": 0.176,
+      "score": 0.589,
       "missing_factors": [
         "policy_rate",
         "inflation",
@@ -58,7 +58,7 @@
     },
     "CHF": {
       "status": "PROVISIONAL",
-      "score": 2.621,
+      "score": 2.406,
       "missing_factors": [
         "policy_rate",
         "inflation",
@@ -70,7 +70,7 @@
     },
     "AUD": {
       "status": "PROVISIONAL",
-      "score": 4.351,
+      "score": 5.0,
       "missing_factors": [
         "policy_rate",
         "inflation",
@@ -82,7 +82,7 @@
     },
     "NZD": {
       "status": "PROVISIONAL",
-      "score": 2.711,
+      "score": -0.709,
       "missing_factors": [
         "policy_rate",
         "inflation",
@@ -94,7 +94,7 @@
     },
     "CAD": {
       "status": "PROVISIONAL",
-      "score": -2.562,
+      "score": -1.68,
       "missing_factors": [
         "policy_rate",
         "inflation",
@@ -108,147 +108,147 @@
   "pairs": [
     {
       "pair": "AUDUSD",
-      "score_difference": 9.351,
+      "score_difference": 8.595,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 1
     },
     {
       "pair": "AUDJPY",
-      "score_difference": 8.782,
+      "score_difference": 7.689,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 2
     },
     {
-      "pair": "NZDUSD",
-      "score_difference": 7.711,
+      "pair": "AUDNZD",
+      "score_difference": 5.709,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 3
     },
     {
-      "pair": "NZDJPY",
-      "score_difference": 7.142,
+      "pair": "CHFJPY",
+      "score_difference": 5.095,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 4
     },
     {
       "pair": "EURUSD",
-      "score_difference": 7.135,
+      "score_difference": 4.273,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 5
     },
     {
-      "pair": "CHFJPY",
-      "score_difference": 7.052,
+      "pair": "GBPUSD",
+      "score_difference": 4.184,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 6
     },
     {
       "pair": "EURJPY",
-      "score_difference": 6.566,
+      "score_difference": 3.367,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 7
     },
     {
-      "pair": "GBPUSD",
-      "score_difference": 5.176,
+      "pair": "GBPJPY",
+      "score_difference": 3.278,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 8
     },
     {
-      "pair": "GBPJPY",
-      "score_difference": 4.607,
+      "pair": "NZDUSD",
+      "score_difference": 2.886,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 9
     },
     {
-      "pair": "EURGBP",
-      "score_difference": 1.959,
+      "pair": "AUDCHF",
+      "score_difference": 2.594,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 10
     },
     {
-      "pair": "CADJPY",
-      "score_difference": 1.869,
+      "pair": "NZDJPY",
+      "score_difference": 1.98,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 11
     },
     {
-      "pair": "AUDCHF",
-      "score_difference": 1.73,
+      "pair": "EURNZD",
+      "score_difference": 1.387,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 12
     },
     {
-      "pair": "AUDNZD",
-      "score_difference": 1.64,
+      "pair": "CADJPY",
+      "score_difference": 1.009,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 13
     },
     {
-      "pair": "EURCHF",
-      "score_difference": -0.486,
+      "pair": "EURGBP",
+      "score_difference": 0.089,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 14
     },
     {
       "pair": "USDJPY",
-      "score_difference": -0.569,
+      "score_difference": -0.906,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 15
     },
     {
-      "pair": "EURNZD",
-      "score_difference": -0.576,
+      "pair": "EURCHF",
+      "score_difference": -1.728,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 16
     },
     {
-      "pair": "EURAUD",
-      "score_difference": -2.216,
+      "pair": "GBPCHF",
+      "score_difference": -1.817,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 17
     },
     {
       "pair": "USDCAD",
-      "score_difference": -2.438,
+      "score_difference": -1.915,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 18
     },
     {
-      "pair": "GBPCHF",
-      "score_difference": -2.445,
+      "pair": "EURAUD",
+      "score_difference": -4.322,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 19
     },
     {
       "pair": "GBPAUD",
-      "score_difference": -4.175,
+      "score_difference": -4.411,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 20
     },
     {
       "pair": "USDCHF",
-      "score_difference": -7.621,
+      "score_difference": -6.001,
       "status": "PROVISIONAL",
       "method": "FX_MOMENTUM_PROXY",
       "rank": 21
@@ -258,7 +258,7 @@
     "ECB_FX_REFERENCE_RATES": {
       "observations": [
         {
-          "date": "2026-11-18",
+          "date": "2026-11-19",
           "value": "ECB reference rates for 7 currencies against EUR"
         }
       ],
