@@ -483,16 +483,26 @@ function renderAutoTechnical(){
  if(!target||!summary)return;
  const threshold=Number($('globalThreshold').value);
  if(!Number.isFinite(threshold)||threshold<1||threshold>100){summary.textContent='接近閾値は1〜100 pipsに設定してください';target.replaceChildren();return;}
- const events=PAIRS.flatMap(p=>data.has(p)?autoTechnicalEvents(p,data.get(p),threshold):[]);
+ const rawEvents=PAIRS.flatMap(p=>data.has(p)?autoTechnicalEvents(p,data.get(p),threshold):[]);
+ // Combine overlapping H4/D1 zones on the same pair and side, keeping the strongest signal.
+ const priority={BREAK:0,CONFIRMED_REJECTION:1,REJECTION:2,TOUCH:3,NEAR:4};
+ rawEvents.sort((a,b)=>priority[a.type]-priority[b.type]||a.distance-b.distance);
+ const events=[];
+ for(const e of rawEvents){
+  const pip=e.pair.endsWith('JPY')?.01:.0001;
+  const existing=events.find(x=>x.pair===e.pair&&x.kind===e.kind&&e.low<=x.high+5*pip&&e.high>=x.low-5*pip);
+  if(existing){existing.period=existing.period===e.period?existing.period:'4時間足・日足';existing.count=Math.max(existing.count,e.count);}
+  else events.push({...e});
+ }
  events.sort((a,b)=>({BREAK:0,CONFIRMED_REJECTION:1,REJECTION:2,TOUCH:3,NEAR:4}[a.type]-{BREAK:0,CONFIRMED_REJECTION:1,REJECTION:2,TOUCH:3,NEAR:4}[b.type])||a.distance-b.distance);
- summary.textContent='検出 '+events.length+'件（ブレイク '+events.filter(e=>e.type==='BREAK').length+' / 反発発生 '+events.filter(e=>e.type==='REJECTION').length+' / 反発継続確認 '+events.filter(e=>e.type==='CONFIRMED_REJECTION').length+' / 接触 '+events.filter(e=>e.type==='TOUCH').length+' / 接近 '+events.filter(e=>e.type==='NEAR').length+'） / 読込 '+data.size+'ペア';
+ summary.textContent='検出 '+events.length+'件（重複整理 '+(rawEvents.length-events.length)+'件）｜（ブレイク '+events.filter(e=>e.type==='BREAK').length+' / 反発発生 '+events.filter(e=>e.type==='REJECTION').length+' / 反発継続確認 '+events.filter(e=>e.type==='CONFIRMED_REJECTION').length+' / 接触 '+events.filter(e=>e.type==='TOUCH').length+' / 接近 '+events.filter(e=>e.type==='NEAR').length+'） / 読込 '+data.size+'ペア';
  target.replaceChildren();
  if(!events.length){target.textContent='該当イベントなし（または確定足不足）';return;}
  for(const e of events.slice(0,60)){
   const row=document.createElement('div');row.className='desk-item';
   const left=document.createElement('div'),name=document.createElement('strong'),desc=document.createElement('small'),pill=document.createElement('span');
-  name.textContent=e.pair+' · '+e.period+' '+(e.kind==='SUPPORT'?'支持':'抵抗');
-  desc.className='desk-subtle';desc.textContent=e.low.toFixed(e.pair.endsWith('JPY')?3:5)+'〜'+e.high.toFixed(e.pair.endsWith('JPY')?3:5)+' / swing '+e.count+' / '+iso(e.end)+' UTC';
+  name.textContent=e.pair+' · '+(e.period==='H4'?'4時間足':e.period==='D1'?'日足':e.period)+' ' +(e.kind==='SUPPORT'?'支持':'抵抗');
+  desc.className='desk-subtle';desc.textContent=e.low.toFixed(e.pair.endsWith('JPY')?3:5)+'〜'+e.high.toFixed(e.pair.endsWith('JPY')?3:5)+' / 水平線の根拠 '+e.count+'か所 / '+iso(e.end)+' UTC';
   pill.className='desk-pill '+(e.type==='TOUCH'?'touch':'near');
   pill.textContent=({BREAK:'終値ブレイク',CONFIRMED_REJECTION:'反発継続を確認',REJECTION:'反発発生',TOUCH:'接触中',NEAR:'接近'}[e.type]||e.type)+(e.type==='NEAR'?' 残り'+e.distance.toFixed(1)+' pips':'');
   left.append(name,desc);row.append(left,pill);target.append(row);
