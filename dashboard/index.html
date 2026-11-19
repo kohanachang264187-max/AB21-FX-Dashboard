@@ -485,7 +485,7 @@ function renderAutoTechnical(){
  if(!Number.isFinite(threshold)||threshold<1||threshold>100){summary.textContent='接近閾値は1〜100 pipsに設定してください';target.replaceChildren();return;}
  const events=PAIRS.flatMap(p=>data.has(p)?autoTechnicalEvents(p,data.get(p),threshold):[]);
  events.sort((a,b)=>({BREAK:0,CONFIRMED_REJECTION:1,REJECTION:2,TOUCH:3,NEAR:4}[a.type]-{BREAK:0,CONFIRMED_REJECTION:1,REJECTION:2,TOUCH:3,NEAR:4}[b.type])||a.distance-b.distance);
- summary.textContent='検出 '+events.length+'件（ブレイク '+events.filter(e=>e.type==='BREAK').length+' / 反発 '+events.filter(e=>e.type==='REJECTION').length+' / 反発確認 '+events.filter(e=>e.type==='CONFIRMED_REJECTION').length+' / 接触 '+events.filter(e=>e.type==='TOUCH').length+' / 接近 '+events.filter(e=>e.type==='NEAR').length+'） / 読込 '+data.size+'ペア';
+ summary.textContent='検出 '+events.length+'件（ブレイク '+events.filter(e=>e.type==='BREAK').length+' / 反発発生 '+events.filter(e=>e.type==='REJECTION').length+' / 反発継続確認 '+events.filter(e=>e.type==='CONFIRMED_REJECTION').length+' / 接触 '+events.filter(e=>e.type==='TOUCH').length+' / 接近 '+events.filter(e=>e.type==='NEAR').length+'） / 読込 '+data.size+'ペア';
  target.replaceChildren();
  if(!events.length){target.textContent='該当イベントなし（または確定足不足）';return;}
  for(const e of events.slice(0,60)){
@@ -494,7 +494,7 @@ function renderAutoTechnical(){
   name.textContent=e.pair+' · '+e.period+' '+(e.kind==='SUPPORT'?'支持':'抵抗');
   desc.className='desk-subtle';desc.textContent=e.low.toFixed(e.pair.endsWith('JPY')?3:5)+'〜'+e.high.toFixed(e.pair.endsWith('JPY')?3:5)+' / swing '+e.count+' / '+iso(e.end)+' UTC';
   pill.className='desk-pill '+(e.type==='TOUCH'?'touch':'near');
-  pill.textContent=({BREAK:'終値ブレイク',CONFIRMED_REJECTION:'反発確認',REJECTION:'反発',TOUCH:'接触中',NEAR:'接近'}[e.type]||e.type)+(e.type==='NEAR'?' 残り'+e.distance.toFixed(1)+' pips':'');
+  pill.textContent=({BREAK:'終値ブレイク',CONFIRMED_REJECTION:'反発継続を確認',REJECTION:'反発発生',TOUCH:'接触中',NEAR:'接近'}[e.type]||e.type)+(e.type==='NEAR'?' 残り'+e.distance.toFixed(1)+' pips':'');
   left.append(name,desc);row.append(left,pill);target.append(row);
  }
 }
