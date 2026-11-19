@@ -9,7 +9,7 @@ from pathlib import Path
 PAIRS="USDJPY EURJPY GBPJPY AUDJPY NZDJPY CADJPY CHFJPY EURUSD GBPUSD AUDUSD NZDUSD USDCAD USDCHF EURGBP EURAUD EURNZD EURCHF GBPAUD GBPCHF AUDNZD AUDCHF".split()
 FIELDS=["Pair","StartUTC","EndUTC","Open","High","Low","Close","Status"]
 SOURCE="kohanachang264187-max/AB21-FX-Trading-System"
-REF=os.environ.get("AB21_SOURCE_REF","feature/ab21-dashboard-v2-20261118")
+REF=os.environ.get("AB21_SOURCE_REF","feature/fx-fundamental-v1-pilot")
 ROOT=Path(__file__).resolve().parents[1]
 def fetch(pair,token):
     url=f"https://api.github.com/repos/{SOURCE}/contents/research_data/fx_sessions/H1/{pair}.csv?ref={REF}"
