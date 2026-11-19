@@ -1,0 +1,29 @@
+name: Refresh provisional currency rankings
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */3 * * 1-5'
+permissions:
+  contents: write
+concurrency:
+  group: provisional-currency-ranking
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch and validate free ECB data
+        run: python scripts/update_provisional_fundamental.py
+      - name: Commit updated public JSON
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add fundamental_output/fundamental_latest.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Refresh ECB provisional currency momentum"
+          git push
