@@ -325,15 +325,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 $('copyAlerts').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(alertText||'該当なし')}catch(e){$('alertSummary').textContent+=' / コピー失敗'}});
 const escFund=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-function showFundamental(d){if(!d||d.mode!=='RESEARCH_ONLY'||!d.currencies||!d.sources)throw Error('研究用ファンダデータ形式が不正');$('fundStatus').textContent='取得UTC: '+(d.generated_at_utc||'不明')+' / 暫定順位: '+(d.provisional_count??0)+' ペア / 検証済み: '+(d.ranked_count??0)+' ペア';const stamp=Date.parse(d.generated_at_utc||'');const age=Date.now()-stamp;$('fundFreshness').textContent=!Number.isFinite(stamp)?'更新時刻を検証できません':age<0?'未来時刻のデータ：要確認':age>86400000?'最終取得から24時間超：鮮度注意':'最終取得から24時間以内（個々の観測日の鮮度とは異なります）';const ranked=Array.isArray(d.pairs)?d.pairs:[];
+function showFundamental(d){if(!d||d.mode!=='RESEARCH_ONLY'||!d.currencies||!d.sources)throw Error('研究用ファンダデータ形式が不正');$('fundStatus').textContent='取得UTC: '+(d.generated_at_utc||'不明')+' / 暫定順位: '+(d.provisional_count??0)+' ペア / 検証済み: '+(d.ranked_count??0)+' ペア';const stamp=Date.parse(d.generated_at_utc||'');const age=Date.now()-stamp;$('fundFreshness').textContent=!Number.isFinite(stamp)?'更新時刻を検証できません':age<0?'未来時刻のデータ：要確認':age>86400000?'最終取得から24時間超：鮮度注意':'最終取得から24時間以内（個々の観測日の鮮度とは異なります）';const ranked=Array.isArray(d.pairs)?d.pairs:[];const observed=d.source_observation_end?Date.parse(d.source_observation_end+'T00:00:00Z'):NaN;const sourceAge=Number.isFinite(observed)?Math.floor((Date.now()-observed)/86400000):NaN;const proxyNotice=d.provisional_count?' / 暫定根拠: ECB為替レート5観測日変化（ファンダ指標ではありません）'+(Number.isFinite(sourceAge)?' / 観測日から'+sourceAge+'日':''):'';$('fundFreshness').textContent+=proxyNotice;
  const pairRows=$('pairStrengthRows');
  if(pairRows){
   pairRows.replaceChildren();
   $('pairStrengthStatus').textContent='暫定順位 '+ranked.filter(p=>(p.status==='RANKED'||p.status==='PROVISIONAL')&&p.score_difference!==null&&Number.isFinite(Number(p.score_difference))).length+' / 21ペア（ECB為替モメンタム参考値・ファンダ5要素未評価）';
   for(const p of ranked.filter(p=>(p.status==='RANKED'||p.status==='PROVISIONAL')&&p.score_difference!==null&&Number.isFinite(Number(p.score_difference))).sort((a,b)=>Number(b.score_difference)-Number(a.score_difference)).slice(0,5)){
    const tr=document.createElement('tr');
-   const ready=(p.status==='RANKED'||p.status==='PROVISIONAL')&&p.score_difference!==null&&Number.isFinite(Number(p.score_difference));
-   for(const value of [ready?(p.rank??'—'):'—',p.pair||'—',ready?Number(p.score_difference).toFixed(2):'未評価',ready?(p.status==='PROVISIONAL'?'暫定・為替参考':'評価済み'):'要素不足']){
+   const ready=(p.status==='RANKED'||p.status==='PROVISIONAL')&&p.score_difference!==null&&Number.isFinite(Number(p.score_difference));const stale=Number.isFinite(sourceAge)&&sourceAge>5;
+   for(const value of [ready?(p.rank??'—'):'—',p.pair||'—',ready?Number(p.score_difference).toFixed(2):'未評価',ready?(p.status==='PROVISIONAL'?(stale?'暫定・観測日古い':'暫定・為替参考'):'評価済み'):'要素不足']){
     const td=document.createElement('td');td.textContent=String(value);tr.append(td);
    }
    pairRows.append(tr);
