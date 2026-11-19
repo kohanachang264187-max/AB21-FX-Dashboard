@@ -20,7 +20,7 @@ jobs:
       - name: Validate and export sanitized research CSVs
         env:
           AB21_SOURCE_TOKEN: ${{ secrets.AB21_SOURCE_TOKEN }}
-          AB21_SOURCE_REF: feature/ab21-dashboard-v2-20261118
+          AB21_SOURCE_REF: feature/fx-fundamental-v1-pilot
         run: python scripts/sync_private_research_csv.py
       - name: Publish changed CSVs
         run: |
