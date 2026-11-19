@@ -1,0 +1,155 @@
+{
+  "mode": "RESEARCH_ONLY",
+  "checked_at_utc": "2026-11-19T11:31:30.231920+00:00",
+  "total": 21,
+  "healthy": 0,
+  "pairs": [
+    {
+      "pair": "USDJPY",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T12:00:00+00:00",
+      "age_hours": 23.5,
+      "bars": 1779
+    },
+    {
+      "pair": "EURJPY",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T12:00:00+00:00",
+      "age_hours": 23.5,
+      "bars": 1779
+    },
+    {
+      "pair": "GBPJPY",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T12:00:00+00:00",
+      "age_hours": 23.5,
+      "bars": 1779
+    },
+    {
+      "pair": "AUDJPY",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T12:00:00+00:00",
+      "age_hours": 23.5,
+      "bars": 1779
+    },
+    {
+      "pair": "NZDJPY",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T12:00:00+00:00",
+      "age_hours": 23.5,
+      "bars": 1779
+    },
+    {
+      "pair": "CADJPY",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "CHFJPY",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "EURUSD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "GBPUSD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "AUDUSD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "NZDUSD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "USDCAD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "USDCHF",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "EURGBP",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "EURAUD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "EURNZD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "EURCHF",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "GBPAUD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "GBPCHF",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "AUDNZD",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    },
+    {
+      "pair": "AUDCHF",
+      "status": "STALE",
+      "latest_utc": "2026-11-18T11:00:00+00:00",
+      "age_hours": 24.5,
+      "bars": 1779
+    }
+  ]
+}
