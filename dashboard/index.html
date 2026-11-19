@@ -426,7 +426,7 @@ function autoTechnicalEvents(pair,rows,threshold){
  for(const period of ['H4','D1']){
   // H4 UTC 00/04/08/... grouping; exclude forming H4 or D1.
   const bars=period==='H4'?aggregateH4(rows):aggregate(rows,'D1');
-  const finished=bars.slice(0,-1);
+  const finished=bars.filter(b=>b.t+(period==='H4'?14400000:86400000)<=last.end);
   if(finished.length<7)continue;
   const levels=[];
   for(let i=2;i<finished.length-2;i++){
@@ -449,8 +449,8 @@ function autoTechnicalEvents(pair,rows,threshold){
    const distance=last.c<low?(low-last.c)/pip:last.c>high?(last.c-high)/pip:0;
    const touched=last.h>=low&&last.l<=high;
    // Break requires a close crossing the zone boundary, not merely a wick.
-   const upBreak=prev.c<=high&&last.c>high&&c.kind==='RESISTANCE';
-   const downBreak=prev.c>=low&&last.c<low&&c.kind==='SUPPORT';
+   const upBreak=prev.c<=high&&last.c>high&&c.kind==='RESISTANCE'&&prev.c>=low;
+   const downBreak=prev.c>=low&&last.c<low&&c.kind==='SUPPORT'&&prev.c<=high;
    // A rejection is confirmed only by an H1 close back outside the touched zone.
    // A subsequent H1 close beyond the rejection candle's extreme confirms follow-through.
    const supportRejection=c.kind==='SUPPORT'&&touched&&last.c>high&&last.l<=high;
