@@ -17,6 +17,7 @@
 <section class="panel"><h2>データ自動取得</h2><div style="display:none" aria-hidden="true"><button id="load" type="button" tabindex="-1">再読込</button><input id="files" type="file" accept=".csv" multiple tabindex="-1"></div><p id="status" role="status" class="warning">自動読込を準備中。デモ数値は表示しません。</p></section>
 <section class="stats"><div class="stat"><span class="muted">読み込みペア</span><strong id="count">0 / 21</strong></div><div class="stat"><span class="muted">最新確定足（UTC）</span><strong id="latest" style="font-size:15px">—</strong></div><div class="stat"><span class="muted">研究データ状態</span><strong style="font-size:15px" class="warning">NOT TRADEABLE</strong></div></section>
 <section class="panel"><h2>通貨ペア別H1価格</h2><div class="scroll"><table><thead><tr><th>ペア</th><th>最新終値</th><th>前足比</th><th>H1本数</th><th>最終時刻 UTC</th></tr></thead><tbody id="overview"><tr><td colspan="5" class="muted">データ未読込</td></tr></tbody></table></div></section>
+<section class="panel" id="autoTechnicalPanel"><h2>テクニカルAlert｜自動算出 H4・D1</h2><p class="muted">確定足のスイング高安（左右2本）から自動生成した研究用ゾーン。直近足の接近・接触・終値ブレイクを表示。画像選定の水平線とは別系統です。通知配信・売買執行は行いません。</p><p id="autoTechnicalSummary" role="status" class="muted">CSV読込待ち</p><div id="autoTechnicalEvents" class="desk-list">データ未読込</div></section>
 <section class="panel"><h2>21通貨ペア・水平線接近一覧</h2><p class="muted">画像から選定した水平線のみを最新確定H1と照合。研究用スナップショットであり、外部通知・自動更新はありません。</p><div class="controls"><label>接近閾値（pips） <input id="globalThreshold" type="number" min="1" max="100" value="10"></label><button id="copyAlerts">接近一覧をコピー</button></div><p id="alertSummary" role="status" class="muted">データ未読込</p><div id="alerts" class="muted">データ未読込</div></section><section class="panel"><h2>価格チャート・画像選定水平線</h2><div class="controls"><label>通貨ペア <select id="pair"></select></label><label>時間足 <select id="period"><option value="H1">H1</option><option value="D1">D1</option><option value="W1">W1</option></select></label></div><p id="levels" class="muted">画像から選定した価格帯のみを重ねて表示します。未登録ペアは水平線なし。</p><svg id="chart" viewBox="0 0 900 350" role="img" aria-label="確定OHLC価格チャート"><text x="20" y="50" fill="#a5b6cf">CSVを読み込んでください</text></svg></section>
 <section class="panel"><h2>画像選定の水平線・接近状況</h2><label>接近閾値（pips） <input id="pipThreshold" type="number" min="1" max="100" value="10"></label><p class="muted">チャート画像から選定した抵抗帯・支持帯のみ表示。直近確定H1の高安が水平線に接触した場合も検出します。ブラウザ内表示のみで外部通知はしません。</p><div id="proximity" class="muted">データ未読込</div></section><section class="panel"><h2>8通貨・価格ベース強弱（24時間）</h2><p class="muted">H1確定足の24時間対数騰落率を、21ペアの基軸・決済通貨に符号付きで配分した相対指標（%）。ファンダ強弱とは別物です。全21ペアがそろい、時刻が一致した場合だけ計算します。</p><p id="priceStrengthStatus" role="status" class="muted">価格CSV待機中</p><div class="scroll"><table><thead><tr><th>順位</th><th>通貨</th><th>相対強弱（%）</th><th>対象ペア数</th></tr></thead><tbody id="priceStrengthRows"><tr><td colspan="4">未読込</td></tr></tbody></table></div></section>
 
@@ -416,7 +417,77 @@ function deskUpdate(){
  const health=$('deskHealth');health.replaceChildren();const lines=['品質区分：PROVISIONAL_NOT_TRADEABLE','取得：'+loaded.length+'/21ペア','時刻整合：'+(!ends.length?'未判定':divergent?'ペア間1時間超の差あり':'最大差1時間以内'),'最新足：'+(ends.length?iso(latest)+' UTC':'未読込'),'水平線：画像から選定した水平線のみ'];for(const l of lines){const d=document.createElement('div');d.textContent=l;health.append(d);}if(divergent||loaded.length!==21){const w=document.createElement('strong');w.textContent=' 不完全データ：研究上の判断に注意';health.append(w);}
  document.querySelectorAll('#overview tr').forEach(tr=>{const p=tr.cells?.[0]?.textContent;tr.hidden=Boolean(p&&PAIRS.includes(p)&&!deskMatches(p));if(p&&PAIRS.includes(p)){tr.dataset.deskPair=p;tr.onclick=()=>{$('pair').value=p;render();$('chart').scrollIntoView({behavior:'smooth',block:'center'});};}});
 }
-const deskOriginalRender=render;render=function(){deskOriginalRender();deskUpdate();renderPriceStrength();};
+
+function autoTechnicalEvents(pair,rows,threshold){
+ if(!rows||rows.length<80)return [];
+ const pip=pair.endsWith('JPY')?.01:.0001,last=rows.at(-1),prev=rows.at(-2);
+ if(!prev)return [];
+ const events=[];
+ for(const period of ['H4','D1']){
+  // H4 UTC 00/04/08/... grouping; exclude forming H4 or D1.
+  const bars=period==='H4'?aggregateH4(rows):aggregate(rows,'D1');
+  const finished=bars.slice(0,-1);
+  if(finished.length<7)continue;
+  const levels=[];
+  for(let i=2;i<finished.length-2;i++){
+   const b=finished[i],neighbors=finished.slice(i-2,i).concat(finished.slice(i+1,i+3));
+   if(neighbors.every(n=>b.h>n.h))levels.push({kind:'RESISTANCE',price:b.h,anchor:b.t});
+   if(neighbors.every(n=>b.l<n.l))levels.push({kind:'SUPPORT',price:b.l,anchor:b.t});
+  }
+  // Merge same-side swings within 5 pips. The band is bounded by actual swing prices.
+  const clusters=[];
+  for(const kind of ['SUPPORT','RESISTANCE']){
+   const sorted=levels.filter(l=>l.kind===kind).sort((a,b)=>a.price-b.price);
+   for(const l of sorted){
+    const c=clusters.find(c=>c.kind===kind&&l.price>=c.low-5*pip&&l.price<=c.high+5*pip);
+    if(c){c.low=Math.min(c.low,l.price);c.high=Math.max(c.high,l.price);c.count++;}
+    else clusters.push({kind,low:l.price,high:l.price,count:1});
+   }
+  }
+  for(const c of clusters){
+   const low=c.low,high=c.high;
+   const distance=last.c<low?(low-last.c)/pip:last.c>high?(last.c-high)/pip:0;
+   const touched=last.h>=low&&last.l<=high;
+   // Break requires a close crossing the zone boundary, not merely a wick.
+   const upBreak=prev.c<=high&&last.c>high&&c.kind==='RESISTANCE';
+   const downBreak=prev.c>=low&&last.c<low&&c.kind==='SUPPORT';
+   const type=upBreak||downBreak?'BREAK':touched?'TOUCH':distance<=threshold?'NEAR':null;
+   if(type)events.push({pair,period,...c,distance,touched,type,end:last.end});
+  }
+ }
+ return events;
+}
+function aggregateH4(rows){
+ const m=new Map();
+ for(const r of rows){
+  const key=Math.floor(r.t/14400000)*14400000;
+  if(!m.has(key))m.set(key,{t:key,o:r.o,h:r.h,l:r.l,c:r.c});
+  else{const b=m.get(key);b.h=Math.max(b.h,r.h);b.l=Math.min(b.l,r.l);b.c=r.c;}
+ }
+ return [...m.values()].sort((a,b)=>a.t-b.t);
+}
+function renderAutoTechnical(){
+ const target=$('autoTechnicalEvents'),summary=$('autoTechnicalSummary');
+ if(!target||!summary)return;
+ const threshold=Number($('globalThreshold').value);
+ if(!Number.isFinite(threshold)||threshold<1||threshold>100){summary.textContent='接近閾値は1〜100 pipsに設定してください';target.replaceChildren();return;}
+ const events=PAIRS.flatMap(p=>data.has(p)?autoTechnicalEvents(p,data.get(p),threshold):[]);
+ events.sort((a,b)=>({BREAK:0,TOUCH:1,NEAR:2}[a.type]-{BREAK:0,TOUCH:1,NEAR:2}[b.type])||a.distance-b.distance);
+ summary.textContent='検出 '+events.length+'件（BREAK '+events.filter(e=>e.type==='BREAK').length+' / TOUCH '+events.filter(e=>e.type==='TOUCH').length+' / NEAR '+events.filter(e=>e.type==='NEAR').length+'） / 読込 '+data.size+'ペア';
+ target.replaceChildren();
+ if(!events.length){target.textContent='該当イベントなし（または確定足不足）';return;}
+ for(const e of events.slice(0,60)){
+  const row=document.createElement('div');row.className='desk-item';
+  const left=document.createElement('div'),name=document.createElement('strong'),desc=document.createElement('small'),pill=document.createElement('span');
+  name.textContent=e.pair+' · '+e.period+' '+(e.kind==='SUPPORT'?'支持':'抵抗');
+  desc.className='desk-subtle';desc.textContent=e.low.toFixed(e.pair.endsWith('JPY')?3:5)+'〜'+e.high.toFixed(e.pair.endsWith('JPY')?3:5)+' / swing '+e.count+' / '+iso(e.end)+' UTC';
+  pill.className='desk-pill '+(e.type==='TOUCH'?'touch':'near');
+  pill.textContent=e.type==='NEAR'?'NEAR '+e.distance.toFixed(1)+' pips':e.type;
+  left.append(name,desc);row.append(left,pill);target.append(row);
+ }
+}
+
+const deskOriginalRender=render;render=function(){deskOriginalRender();deskUpdate();renderPriceStrength();renderAutoTechnical();};
 document.querySelectorAll('[data-desk-filter]').forEach(btn=>btn.addEventListener('click',()=>{deskFilter=btn.dataset.deskFilter;document.querySelectorAll('[data-desk-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b===btn)));deskUpdate();}));
 </script><script>
 // PWA registration is only attempted on HTTPS or localhost; file:// remains a portable snapshot.
