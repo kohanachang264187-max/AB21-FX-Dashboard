@@ -483,7 +483,19 @@ function renderAutoTechnical(){
  if(!target||!summary)return;
  const threshold=Number($('globalThreshold').value);
  if(!Number.isFinite(threshold)||threshold<1||threshold>100){summary.textContent='接近閾値は1〜100 pipsに設定してください';target.replaceChildren();return;}
- const rawEvents=PAIRS.flatMap(p=>data.has(p)?autoTechnicalEvents(p,data.get(p),threshold):[]);
+ // Reject old snapshots on weekdays; a historical event must not look live.
+ const now=Date.now();
+ const stalePairs=[];
+ const rawEvents=PAIRS.flatMap(p=>{
+  if(!data.has(p))return [];
+  const rows=data.get(p),last=rows.at(-1);
+  if(!last||!Number.isFinite(last.end))return [];
+  const age=now-last.end;
+  const utcDay=new Date(now).getUTCDay(),utcHour=new Date(now).getUTCHours();
+  const marketClosed=utcDay===6||(utcDay===0&&utcHour<22)||(utcDay===5&&utcHour>=22);
+  if(age>3*3600000&&!marketClosed){stalePairs.push(p);return [];}
+  return autoTechnicalEvents(p,rows,threshold);
+ });
  // Combine overlapping H4/D1 zones on the same pair and side, keeping the strongest signal.
  const priority={BREAK:0,CONFIRMED_REJECTION:1,REJECTION:2,TOUCH:3,NEAR:4};
  rawEvents.sort((a,b)=>priority[a.type]-priority[b.type]||a.distance-b.distance);
@@ -495,7 +507,7 @@ function renderAutoTechnical(){
   else events.push({...e});
  }
  events.sort((a,b)=>({BREAK:0,CONFIRMED_REJECTION:1,REJECTION:2,TOUCH:3,NEAR:4}[a.type]-{BREAK:0,CONFIRMED_REJECTION:1,REJECTION:2,TOUCH:3,NEAR:4}[b.type])||a.distance-b.distance);
- summary.textContent='検出 '+events.length+'件（重複整理 '+(rawEvents.length-events.length)+'件）｜（ブレイク '+events.filter(e=>e.type==='BREAK').length+' / 反発発生 '+events.filter(e=>e.type==='REJECTION').length+' / 反発継続確認 '+events.filter(e=>e.type==='CONFIRMED_REJECTION').length+' / 接触 '+events.filter(e=>e.type==='TOUCH').length+' / 接近 '+events.filter(e=>e.type==='NEAR').length+'） / 読込 '+data.size+'ペア';
+ summary.textContent=(stalePairs.length?'更新遅延 '+stalePairs.length+'ペアは通知対象外｜':'')+'検出 '+events.length+'件（重複整理 '+(rawEvents.length-events.length)+'件）｜（ブレイク '+events.filter(e=>e.type==='BREAK').length+' / 反発発生 '+events.filter(e=>e.type==='REJECTION').length+' / 反発継続確認 '+events.filter(e=>e.type==='CONFIRMED_REJECTION').length+' / 接触 '+events.filter(e=>e.type==='TOUCH').length+' / 接近 '+events.filter(e=>e.type==='NEAR').length+'） / 読込 '+data.size+'ペア';
  target.replaceChildren();
  if(!events.length){target.textContent='該当イベントなし（または確定足不足）';return;}
  for(const e of events.slice(0,60)){
