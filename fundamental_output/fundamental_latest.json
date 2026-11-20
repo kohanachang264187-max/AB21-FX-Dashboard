@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0",
   "mode": "RESEARCH_ONLY",
-  "generated_at_utc": "2026-11-20T00:37:04.010962+00:00",
+  "generated_at_utc": "2026-11-20T11:37:17.476762+00:00",
   "ranked_count": 0,
   "provisional_count": 21,
   "provisional_method": "ECB five-observation FX reference-rate momentum; NOT macro fundamentals; missing all five macro factors",
